@@ -34,7 +34,7 @@ services:
       # - "5001:443/tcp"
     environment:
       TZ: 'America/Mazatlan'
-      FTLCONF_webserver_api_password: 'USEYOURPASSWORD'
+      FTLCONF_webserver_api_password: '${PIHOLE_PASSWORD}'
       FTLCONF_dns_listeningMode: 'ALL'
     volumes:
       - '/home/server/Dockers/data/pihole:/etc/pihole'
