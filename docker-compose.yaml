@@ -1,0 +1,75 @@
+services:
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    environment:
+      TZ: "America/Mazatlan"
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - /home/server/Dockers/data/nginx/data:/data
+      - /home/server/Dockers/data/nginx/letsencrypt:/etc/letsencrypt
+
+  n8n:
+    container_name: n8n
+    image: docker.n8n.io/n8nio/n8n
+    # ports:
+      # - "5678:5678"
+    environment:
+      TZ: 'America/Mazatlan'
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
+      N8N_RUNNERS_ENABLED: true
+    volumes:
+      - 'n8n_data:/home/node/.n8n'
+    
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      # - "5000:80/tcp"
+      # - "5001:443/tcp"
+    environment:
+      TZ: 'America/Mazatlan'
+      FTLCONF_webserver_api_password: 'USEYOURPASSWORD'
+      FTLCONF_dns_listeningMode: 'ALL'
+    volumes:
+      - '/home/server/Dockers/data/pihole:/etc/pihole'
+    cap_add:
+      - NET_ADMIN
+      - SYS_TIME
+      - SYS_NICE
+    restart: unless-stopped
+
+  jdownloader:
+    container_name: jdownloader-2
+    image: jlesage/jdownloader-2
+    # ports:
+      # - "5800:5800"
+    volumes:
+      - '/home/server/Dockers/data/jdownloader-2:/config:rw'
+      - '/home/server/2TB/Downloads:/output:rw'
+    restart: unless-stopped
+  
+  jellyfin:
+    container_name: jellyfin
+    image: jellyfin/jellyfin:latest
+    # ports:
+    #   - "7359:7359"
+    #   - "1900:1900"
+    #   # - "8096:8096"
+    #   # - "8920:8920"
+    network_mode: host
+      # - dockers_default
+
+    volumes:
+      - '/home/server/Dockers/data/jellyfin/config:/config'
+      - '/home/server/Dockers/data/cache:/cache'
+      - '/home/server/2TB/media:/media'
+    restart: unless-stopped
+
+volumes:
+  n8n_data:
